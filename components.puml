@@ -1,0 +1,47 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+AddElementTag("microService", $shape=EightSidedShape(), $bgColor="CornflowerBlue", $fontColor="white", $legendText="microservice")
+AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
+
+Person(admin, "Администратор")
+Person(moderator, "Модератор")
+Person(user, "Пользователь")
+
+System_Ext(web_site, "Клиентский веб-сайт", "HTML, CSS, JavaScript, React", "Веб-интерфейс")
+
+System_Boundary(conference_site, "Сайт интернет-магазина") {
+   Container(client_service, "Сервис авторизации", "C++", "Сервис управления пользователями", $tags = "microService")    
+   Container(goods_service, "Сервис сервис создания товаров", "C++", "Сервис управления  товарами", $tags = "microService") 
+   Container(order_service, "Сервис сервис заказов", "C++", "Сервис управления  покупками пользователей", $tags = "microService")
+   Container(basket_service, "Сервис  работы с корзиной", "C++", "Сервис управления корзиной", $tags = "microService")
+   Container(error_service, "Сервис мониторинга ошибок", "C++", "Сервис мониторинга ошибок", $tags = "microService")
+   Container(payment_service, "Сервис оплаты", "C++", "Сервис оплаты покупки", $tags = "microService")   
+   ContainerDb(db, "База данных", "MySQL", "Хранение данных о товарах, пользователя, заказе и оплате пользователях, хранение информации о корзине пользователя", $tags = "storage")
+   
+}
+
+Rel(admin, web_site, "Просмотр, добавление и редактирование информации о пользователях, Просмотр, добавление и редактирование информации о товарах")
+Rel(moderator, web_site, "Модерация товаров и пользователей")
+Rel(user, web_site, "Регистрация, создание/просмотр информации о заказах, просмотр/изменение корзины")
+
+Rel(web_site, client_service, "Работа с пользователями", "localhost/person")
+Rel(client_service, db, "INSERT/SELECT/UPDATE", "SQL")
+
+Rel(web_site, goods_service, "Работа с товарами", "localhost/payment")
+Rel(goods_service, db, "INSERT/SELECT/UPDATE", "SQL")
+
+Rel(web_site, order_service, "Работа с заказами", "localhost/deliv")
+Rel(order_service, db, "INSERT/SELECT/UPDATE", "SQL")
+
+Rel(web_site, basket_service, "Работа с корзиной", "localhost/pack")
+Rel(basket_service, db, "INSERT/SELECT/UPDATE", "SQL")
+
+Rel(web_site, payment_service, "Работа с оплатой заказов", "localhost/payment")
+Rel(payment_service, db, "INSERT/SELECT/UPDATE", "SQL")
+
+Rel(web_site, error_service, "Отслеживание ошибок", "localhost/errors")
+Rel(error_service, db, "INSERT/SELECT/UPDATE", "SQL")
+
+
+@enduml
